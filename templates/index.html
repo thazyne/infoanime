@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cari Anime</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8fafc; }
+        .anime-card { max-width: 600px; margin: 2rem auto; box-shadow: 0 2px 8px #0001; border-radius: 1rem; background: #fff; padding: 2rem; }
+        .anime-img { max-width: 200px; border-radius: 1rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="anime-card">
+        <h2 class="mb-4">Cari Info Anime</h2>
+        <form method="post" class="mb-4 d-flex gap-2">
+            <input name="judul" class="form-control" placeholder="Masukkan judul anime" value="{{ judul|default('') }}">
+            <button type="submit" class="btn btn-primary">Cari</button>
+        </form>
+        {% if anime %}
+            <div class="d-flex gap-4 align-items-start">
+                <img src="{{ anime['images']['jpg']['large_image_url'] }}" alt="{{ anime['title'] }}" class="anime-img">
+                <div>
+                    <h3>{{ anime['title'] }}</h3>
+                    <p><b>Sinopsis:</b> {{ anime['synopsis'] }}</p>
+                    {% if review %}
+                        <div class="alert alert-info p-2"><b>Review user ({{ review['user']['username'] }}):</b><br>{{ review['review'] }}</div>
+                    {% else %}
+                        <p><i>Tidak ada review user.</i></p>
+                    {% endif %}
+                </div>
+            </div>
+        {% elif judul is not none %}
+            <div class="alert alert-warning">Anime tidak ditemukan.</div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

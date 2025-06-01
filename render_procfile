@@ -1,0 +1,2 @@
+# Gunicorn config for Render deployment
+web: gunicorn web_app:app

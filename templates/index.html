@@ -1,41 +1,58 @@
-<!doctype html>
-<html lang="id">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cari Anime</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Anime Recommendation System</title>
     <style>
-        body { background: #f8fafc; }
-        .anime-card { max-width: 600px; margin: 2rem auto; box-shadow: 0 2px 8px #0001; border-radius: 1rem; background: #fff; padding: 2rem; }
-        .anime-img { max-width: 200px; border-radius: 1rem; }
+        body { font-family: Segoe UI, Arial, sans-serif; background: #f7f7f7; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px #0001; padding: 32px; }
+        h1 { color: #4A90E2; }
+        .result { margin-top: 32px; }
+        .error { color: #c00; }
+        form { margin-bottom: 24px; }
+        input[type=text] { width: 80%; padding: 8px; font-size: 1em; border-radius: 4px; border: 1px solid #bbb; }
+        input[type=submit] { padding: 8px 20px; font-size: 1em; border-radius: 4px; border: none; background: #4A90E2; color: #fff; cursor: pointer; }
+        input[type=submit]:hover { background: #357ABD; }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="anime-card">
-        <h2 class="mb-4">Cari Info Anime</h2>
-        <form method="post" class="mb-4 d-flex gap-2">
-            <input name="judul" class="form-control" placeholder="Masukkan judul anime" value="{{ judul|default('') }}">
-            <button type="submit" class="btn btn-primary">Cari</button>
-        </form>
-        {% if anime %}
-            <div class="d-flex gap-4 align-items-start">
-                <img src="{{ anime['images']['jpg']['large_image_url'] }}" alt="{{ anime['title'] }}" class="anime-img">
-                <div>
-                    <h3>{{ anime['title'] }}</h3>
-                    <p><b>Sinopsis:</b> {{ anime['synopsis'] }}</p>
-                    {% if review %}
-                        <div class="alert alert-info p-2"><b>Review user ({{ review['user']['username'] }}):</b><br>{{ review['review'] }}</div>
-                    {% else %}
-                        <p><i>Tidak ada review user.</i></p>
-                    {% endif %}
-                </div>
-            </div>
-        {% elif judul is not none %}
-            <div class="alert alert-warning">Anime tidak ditemukan.</div>
+    <h1>Anime Recommendation System</h1>
+    <form method="post">
+        <label>Masukkan judul anime:</label><br>
+        <input type="text" name="title" required value="{{ title|default('') }}">
+        <input type="submit" value="Cari & Rekomendasikan">
+    </form>
+    {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    {% if result %}
+    <div class="result">
+        <h2>Hasil untuk: {{ result.title }}</h2>
+        {% if result.image %}
+        <img src="{{ result.image }}" alt="Gambar Anime" style="max-width:180px;float:right;margin-left:20px;border-radius:8px;box-shadow:0 2px 8px #0002;">
         {% endif %}
+        <p><b>Sinopsis:</b> {{ result.synopsis }}</p>
+        <div style="display:flex;align-items:center;gap:24px;">
+            <div style="width:120px;height:120px;position:relative;">
+                <svg width="120" height="120">
+                  <circle cx="60" cy="60" r="54" stroke="#eee" stroke-width="12" fill="none"/>
+                  <circle cx="60" cy="60" r="54" stroke="{{ result.color }}" stroke-width="12" fill="none"
+                    stroke-dasharray="339.292" stroke-dashoffset="{{ 339.292 - (result.avg_score|float/10*339.292) }}" stroke-linecap="round"/>
+                  <text x="60" y="68" text-anchor="middle" font-size="32" font-weight="bold" fill="{{ result.color }}">{{ result.avg_score }}</text>
+                  <text x="60" y="90" text-anchor="middle" font-size="14" fill="#333">Persentase</text>
+                </svg>
+            </div>
+            <div>
+                <p><b>Status Rekomendasi:</b> <span style="color:#000">
+                    {% if result.status == 'Recommended' %}Direkomendasikan
+                    {% elif result.status == 'Mid' %}Pertimbangkan
+                    {% elif result.status == 'Not Recommended' %}Tidak Direkomendasikan
+                    {% else %}Tidak Ada Data
+                    {% endif %}
+                </span></p>
+            </div>
+        </div>
     </div>
+    {% endif %}
 </div>
 </body>
 </html>
